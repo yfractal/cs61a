@@ -104,21 +104,3 @@ def square(x):
 
 def two(x):
 	return 2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

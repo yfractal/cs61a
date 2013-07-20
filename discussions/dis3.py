@@ -59,6 +59,14 @@ def cartesian_product(tup_1, tup_2):
 			r += ((e1,e2),(e2,e1))
 	return r
 
+def cartesian_product(tup_1, tup_2):
+	product = ()
+	for elem1 in tup_1:
+		for elem2 in tup_2:
+			product += ((elem1, elem2), )
+			product += ((elem2, elem1), )
+	return product	
+
 # 3 Sequence Iteration with For Loops
 def sum_sequence(sequence):
 	r = 0
@@ -172,15 +180,6 @@ def reflect_across_y(seg):
 	s_p = start_pt(seg)
 	e_p = end_pt(seg)	
 	return make_seg(reflect_y(s_p),reflect_y(e_p))
-
-def midpoint(seg):
-	first_pt = seg[0]
-	sec_pt = seg[1]
-	new_x = (first_pt[0] + sec_pt[0]) // 2
-	new_y = (first_pt[1] + sec_pt[1]) // 2
-	return (new_x, new_y)
-
-
 
 def midpoint(seg):
 	first_pt = start_pt(seg)

@@ -137,4 +137,3 @@ def make_anonymous_factorial():
     120
     """
     return lambda n:1 if n == 1 else mul(n,make_anonymous_factorial()(n-1))
-
