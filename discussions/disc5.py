@@ -1,10 +1,5 @@
 # MORE MUTATION, NONLOCAL, AND MORE ENVIRONEMENTS
 # 1 More Mutation (is vs. ==)
-def f():
-	def h(x):
-		return x
-	return h
-
 """ 
 >>> x = [1, 2, 3]
 >>> y = [1, 2, 3]
@@ -133,8 +128,6 @@ def interesting(x):
 	because(5)
 	return x
 print(interesting(3))
-
-
 
 def make_person(name):
 	def dispatch(msg):
