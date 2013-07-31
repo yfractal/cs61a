@@ -64,8 +64,7 @@ class VendingMachine(object):
         self.money += money
         return "Current balance: $" + str(self.money)
 
-
-        # Q2.
+# Q2.
 
 class MissManners(object):
     """A container class that only forward messages that say please.
@@ -107,7 +106,6 @@ class MissManners(object):
 
 class Amount(object):
     """An amount of nickels and pennies.
-
     >>> a = Amount(3, 7)
     >>> a.nickels
     3
@@ -125,7 +123,7 @@ class Amount(object):
     def __init__(self,nickels,pennies):
         self.nickels = nickels
         self.pennies = pennies
-
+################ 
     @property        
     def value(self):
         return Amount.nickels_value * self.nickels  + self.pennies *  Amount.pennies_value
@@ -198,12 +196,18 @@ class Rlist(object):
         self.first = first
         self.remain = remain
 
+    # def __len__(self):
+    #     r = self.remain
+    #     l = 1
+    #     while r != 'empty':
+    #         l ,r= l + 1,r.remain
+    #     return l
+
     def __len__(self):
-        r = self.remain
-        l = 1
-        while r != 'empty':
-            l ,r= l + 1,r.remain
-        return l
+        if self.remain == 'empty':
+            return 1
+        else :
+            return 1 + len(self.remain)
 
     def __getitem__(self, index):
         c = 0
