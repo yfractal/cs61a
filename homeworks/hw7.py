@@ -130,34 +130,32 @@ class Amount(object):
     def value(self):
         return Amount.nickels_value * self.nickels  + self.pennies *  Amount.pennies_value
 
-# class MinimalAmount(Amount):
-#     """An amount of nickels and pennies that is initialized with no more than
-#     four pennies, by converting excess pennies to nickels.
+class MinimalAmount(Amount):
+    """An amount of nickels and pennies that is initialized with no more than
+    four pennies, by converting excess pennies to nickels.
 
-#     >>> a = MinimalAmount(3, 7)
-#     >>> a.nickels
-#     4
-#     >>> a.pennies
-#     2
-#     >>> a.value
-#     22
-#     """
-#     "*** YOUR CODE HERE ***"
-#     def __init__(self,nickels,pennies):
-#         self.nickels = nickels
-#         self.pennies = pennies
-#         value = Amount.value
+    >>> a = MinimalAmount(3, 7)
+    >>> a.nickels
+    4
+    >>> a.pennies
+    2
+    >>> a.value
+    22
+    """
+    "*** YOUR CODE HERE ***"
+    def __init__(self,nickels,pennies):
+        self.nickels = nickels
+        self.pennies = pennies
+        # #############
+        value = self.value
+        ##################
+        # self.nickels = int(value /  Amount.nickels_value)
+        ################### 
+        # ==
+        self.nickels = int(value /  self.nickels_value)
+        self.pennies = int((value  % self.nickels_value) / self.pennies_value)
 
-#         # self.nickels = value / Amount.nickels_value
-#         # self.pennies = (value  % Amount.nickels_value) / Amount.pennies_value
-#     # @property 
-#     # def nickels(self):
-#     #     value = self.value
-#     #     return value / self.nickels_value        
-
-
-    # Q4.
-
+# Q4.
 class Container(object):
     """A container for a single item.
 
@@ -213,10 +211,3 @@ class Rlist(object):
         while c < index:
             r ,c= r.remain ,c+ 1
         return r.first
-
-
-
-
-
-
-
