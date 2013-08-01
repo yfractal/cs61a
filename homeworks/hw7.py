@@ -6,7 +6,6 @@ Section:
 """
 
 # Q1.
-
 class VendingMachine(object):
     """A vending machine that vends some product for some price.
 
@@ -128,6 +127,7 @@ class Amount(object):
     def value(self):
         return Amount.nickels_value * self.nickels  + self.pennies *  Amount.pennies_value
 
+
 class MinimalAmount(Amount):
     """An amount of nickels and pennies that is initialized with no more than
     four pennies, by converting excess pennies to nickels.
@@ -215,3 +215,17 @@ class Rlist(object):
         while c < index:
             r ,c= r.remain ,c+ 1
         return r.first
+
+class Base(object):
+    var = "in base"
+    def __init__(self,name):
+        self.name = name
+b = Base("b")        
+print(b.var)
+class Inheri(Base):
+    def get_var(self):
+        return self.var
+# >>>>>>>>>???????????????????
+i = Inheri("in")    
+print(i.get_var())
+# >>>>>>>>>???????????????????
