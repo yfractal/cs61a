@@ -163,8 +163,7 @@ def mergesort(seq):
 	if len(seq) <= 1:
 		return seq
 	half = len(seq)
-
-	merge( mergesort(seq[:half]) ,mergesort(seq[half:]) )
+	return merge( mergesort(seq[:half]) ,mergesort(seq[half:]) )
 
 def merge(s1,s2):
 	"""
