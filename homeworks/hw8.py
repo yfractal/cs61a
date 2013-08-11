@@ -4,8 +4,6 @@ Login:
 TA:
 Section:
 """
-
-
 def empty(s):
     return len(s) == 0
 
@@ -109,6 +107,7 @@ def adjoin_set3(s, v):
         return Tree(v)
     if s.entry == v:
         return s
+        
     if s.entry < v:
         return Tree(s.entry, s.left, adjoin_set3(s.right, v))
     if s.entry > v:
