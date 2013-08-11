@@ -12,7 +12,6 @@ def getitem_rlist(s, index):
 		return s.first
 	return getitem_rlist(s.rest,index-1)
 
-
 # 3.
 def insert_rlist(s, index, value):
 	"""
@@ -54,35 +53,43 @@ def tree_size(t):
 	if t.is_leaf:
 		return 1		
 	return 1 + tree_size(t.left)  + tree_size(t.right)
-
-
-
+	
 def find_path(t, entry):
-	flag  =  false
-	if t.entry == entry:
-		return the tuple
-	if t == None:
-		return False
-
-	def find_path_h(t,entry):
+	if t.is_leaf():
 		if t.entry == entry:
-			return True
-		if t == None:
-			return False
-		t.flag = find_path_h(t.left,entry) or find_path_h(t.right,entry)
+			return true
+		else:
+			return false
+	flag = find_path(t.left,entry) or find_path(t.right,entry)
+
+	if flag:
+		return entry
 
 
-	s = []
-	def travel(t):
-		if t.flag == true:
-			s.append(t.entry)
-		travel(t.left)
-		travel(t.right)
+	# flag  =  false
+	# if t.entry == entry:
+	# 	return the tuple
+	# if t == None:
+	# 	return False
 
-	find_path_h(t,entry)
-	travel(t)
-	return tuple(s)
+	# def find_path_h(t,entry):
+	# 	if t.entry == entry:
+	# 		return True
+	# 	if t == None:
+	# 		return False
+	# 	t.flag = find_path_h(t.left,entry) or find_path_h(t.right,entry)
 
+
+	# s = []
+	# def travel(t):
+	# 	if t.flag == true:
+	# 		s.append(t.entry)
+	# 	travel(t.left)
+	# 	travel(t.right)
+
+	# find_path_h(t,entry)
+	# travel(t)
+	# return tuple(s)
 # left find(t,entry):
 # 	if t.entry == entry:
 # 		return True

@@ -58,7 +58,6 @@ def rlist_to_set_mut(rlist):
     else:
         rlist_to_set_mut(rlist.rest)
 
-
 # Q5
 def exclusive_or(set1, set2):
     """Returns a set containing elements in set1 or set2, but not
@@ -74,15 +73,15 @@ def exclusive_or(set1, set2):
     if empty(set2):
         return set1
     if set1.first < set2.first:
-        if set_contains(set2,set1.first):
-            return exclusive_or(set1.rest,set2)
-        else:
-            return Rlist(set1.first,exclusive_or(set1.rest,set2))
+        # if set_contains(set2,set1.first):
+        #     return exclusive_or(set1.rest,set2)
+        # else:
+        return Rlist(set1.first,exclusive_or(set1.rest,set2))
     if set1.first > set2.first:
-        if set_contains(set1,set2.first):
-            return exclusive_or(set1,set2.rest)
-        else:
-            return Rlist(set2.first,exclusive_or(set1,set2.rest))
+        # if set_contains(set1,set2.first):
+        #     return exclusive_or(set1,set2.rest)
+        # else:
+        return Rlist(set2.first,exclusive_or(set1,set2.rest))
     return exclusive_or(set1.rest,set2.rest)        
 
 # Q8
