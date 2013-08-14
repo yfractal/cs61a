@@ -43,16 +43,15 @@
 
 ; Derive returns the derivative of exp with respect to var.
 (define (derive   exp var)
-  (cond ( (number? exp) 0 ) ;it is a number return 0
+  (cond 
+        ( (number? exp) 0 ) ;it is a number return 0
         ( (variable? exp) ;exp is a variable
-          (if (same-variable? exp var) 1 0) ;same variable return 1,not return 0
-          )
-        ((sum? exp) (derive-sum exp var)) ;expresion is a sum 
-
+            (if (same-variable? exp var) 1 0) ;same variable return 1,not return 0
+            ) 
+        ( (sum? exp) (derive-sum exp var)) ;expresion is a sum 
         ((product? exp) (derive-product exp var)) ;expresion is a product *
         ((exponentiation? exp) (derive-exponentiation exp var)) ;exponent x**n
         (else 'Error)))
-
 
 ; Variables are represented as symbols
 (define (variable? x) (symbol? x))
@@ -62,7 +61,10 @@
 
 ; Numbers are compared with =
 (define (=number? exp num)
-  (and (number? exp) (= exp num)))
+  (and 
+    (number? exp) 
+    (= exp num))
+  )
 
 ; Sums are represented as lists that start with +.
 (define (make-sum a1 a2)
@@ -125,10 +127,11 @@
                 (derive '(* (* x y) (+ x 3)) 'x)))
 
 (define (derive-product exp var)
-  (define fx (cadr exp) )
+  (define fx (cadr exp)  )
   (define gx (caddr exp))
   (define d_fx (derive fx var))
   (define d_gx (derive gx var))
+
   (make-sum
     (make-product fx d_gx) (make-product d_fx gx)
   ) 
@@ -143,8 +146,8 @@
 (define (square x) (* x x))
 
 (define (pow b n)
-  ; (cond ( (number? exp) 0 ) ;it is a number return 0
-    (cond ( (= n 0) 1)
+    (cond 
+      ( (= n 0) 1)
       (else ( * b  (pow b (- n 1))) )
       )
   )
@@ -161,12 +164,11 @@
     (assert-equal '(* 2 x) (derive x^2 'x))))
 
 (define (make-exponentiation base exponent)
-  ; (cond ( (= n 0) 1)
-    (cond ( (= exponent 0) 1)
-      ((= exponent 1) base)
-      (
-        (and (number? base) (number? exponent)  ) (pow base exponent)
-        )
+    (cond 
+      ( (= exponent 0) 1)
+      ( (= exponent 1) base)
+      ( (and (number? base) (number? exponent)) 
+          (pow base exponent))
       (else (list base '^ exponent))
         )
       )
