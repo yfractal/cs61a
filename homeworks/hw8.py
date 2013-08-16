@@ -35,7 +35,7 @@ def intersect_set2(set1, set2):
         return Rlist(e1, intersect_set2(set1.rest, set2.rest))
     if e1 < e2:
         return intersect_set2(set1.rest, set2)
-    if e2 < e1:
+    if e1 > e2:
         return intersect_set2(set1, set2.rest)
 
 # Q1.
@@ -139,7 +139,7 @@ def depth(s, v):
 
 
 # # Q4.
-
+# !!!!!!!!!!!!!
 def tree_to_ordered_sequence(s):
     """Return an ordered sequence containing the elements of tree set s.
 
@@ -148,23 +148,19 @@ def tree_to_ordered_sequence(s):
     Rlist(1, Rlist(4, Rlist(7, Rlist(9))))
     """
     "*** YOUR CODE HERE ***"
-    if s == None:
-        return 
     if s.left == None and s.right == None:
         return s.entry
-
-    # if s.left == None:
-    #     return s.entry, Rlist(tree_to_ordered_sequence(s.right) )
-
-    # if s.right == None:
-    #     return Rlist(tree_to_ordered_sequence(s.left) ,Rlist(s.entry))
-
-    return  Rlist( tree_to_ordered_sequence(s.left),
-                        Rlist(s.entry, 
-                            Rlist(tree_to_ordered_sequence(s.right)
-                                        )
-                                     )
+    if s.left != None and s.right != None:
+        return  Rlist( tree_to_ordered_sequence(s.left),
+                            Rlist(s.entry, 
+                                tree_to_ordered_sequence(s.right)
+                                  )
                                 )
+    if s.left != None and s.right == None:
+        return Rlist(tree_to_ordered_sequence(s.left),Rlist(s.entry))
+    if s.left == None and s.right != None:
+        return Rlist(s.entry,Rlist(tree_to_ordered_sequence(s.right)))
+# !!!!!!!!!!!!!
 
 # # Q5.
 
@@ -300,3 +296,4 @@ def big_tree(left, right):
         return None
     split = left + (right - left)//2
     return Tree(split, big_tree(left, split-2), big_tree(split+2, right))
+print(big_tree(0,9))

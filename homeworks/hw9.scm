@@ -57,7 +57,9 @@
 (define (variable? x) (symbol? x))
 
 (define (same-variable? v1 v2)
-  (and (variable? v1) (variable? v2) (eq? v1 v2)))
+  (and 
+    (variable? v1) (variable? v2) (eq? v1 v2))
+  )
 
 ; Numbers are compared with =
 (define (=number? exp num)
@@ -115,7 +117,7 @@
 (define (derive-sum exp var)
   ;fx = cadr,gx = caddr   ;derive fx,gx   ;+
   (make-sum
-    (derive   (cadr exp)  var)  (derive   (caddr exp)  var)
+    (derive (cadr exp) var)  (derive (caddr exp) var)
      )
   )
 

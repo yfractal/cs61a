@@ -71,20 +71,24 @@
 ; <EXPR>) for you.
 
 ; lambda- let
-; (let ( (<SYMBOL1> <EXPR1>)
-; ...
-; (<SYMBOLN> <EXPRN>) )
-; <BODY> )
+; (let ( 
+; 	(<SYMBOL1> <EXPR1>)
+; 		...
+; 	(<SYMBOLN> <EXPRN>) 
+; 	)
+; <BODY> 
+; )
 ; ( (lambda (<SYMBOL1> ... <SYMBOLN>) <BODY>) <EXPR1> ... <EXPRN>)
-; You’ll notice that what let does then is bind symbols to expressions. F
+; You’ll notice that what let does then is bind symbols to expressions.
 
-; :::::::>????????????
+; ............
 (define (sin x)
 	(if (< x 0.000001)
 		x
-		(let ( (recursive-step (sin (/ x 3))) ) ;let here
-			(- (* 3 recursive-step)
-				(* 4 (expt recursive-step 3)))
+		(let ((recursive-step (sin (/ x 3))) ) ;let here
+				 (- 
+				 	(* 3 recursive-step) (* 4 (expt recursive-step 3))
+				 	)
 			)
 		)
 	)
@@ -93,7 +97,8 @@
  (define (factorial x)
  	(if (= x 1)
          x
-		(* x (factorial (- x 1)))
+		(* 
+			x (factorial (- x 1)))
 		)
  	)
 

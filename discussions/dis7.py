@@ -20,8 +20,8 @@ def countup(n):
 	if n == 1:
 		print(n)
 		return 
-	countup(n-1)
-	print(n)
+	countup(n-1) #count first 
+	print(n) #then print
 
 def expt(base, power):
 	"""
@@ -36,18 +36,25 @@ def expt(base, power):
 		return base
 	return base * expt(base  ,power - 1)
 
+# !!!!!!!!!!!!!!!!!!!!
 def map(fn, seq):
 	if len(seq) == 1:
-		return fn(se)
-	return [ fn(seq[0]) , map(fn,seq[1:])]
+		return [fn(seq[0])] #base
+	return [fn(seq[0])] #this turn 
+			+ map(fn,seq[1:]) #next turn
+# !!!!!!!!!!!!!!!!!!!!
 
-def map2(fn,seq)	:
+def square(x):
+	return x * x 
+t_se = [1,2,3,4,5]
+r = map(square,t_se)
+print(r)
+
+def map2(fn,seq):
 	if len(seq) == 0:
 		return
 	seq[0] = fn(seq[0])
 	map(fn,seq[1:])
-
-
 
 # 5	
 
@@ -88,27 +95,6 @@ def count_stair_ways(n):
 	elif n == 0:
 		return 1
 	return count_stair_ways(n-1) + count_stair_ways(n-2)
-
-
-def count_stair_ways(n):
-	"""
-	>>> count_stair_ways(1)
-	1
-	>>> count_stair_ways(2)
-	2
-	>>> count_stair_ways(3)
-	3
-	>>> count_stair_ways(4)
-	5
-	>>> count_stair_ways(6)
-	13
-	>>> 
-	"""
-	if n == 1:
-		return 1
-	elif n == 2:
-		return 2
-	return count_stair_ways(n-1) + count_stair_ways(n-2)	
 
 # 2. Pascal’s triangle
 def pascal(row, column):
@@ -167,6 +153,7 @@ def mergesort(seq):
 
 def merge(s1,s2):
 	"""
+	# s1,s2 are in order
 	>>> s1 = [2,11,13,15,17]
 	>>> s2 = [1,6,7,12,13,14]
 	>>> merge(s1,s2)

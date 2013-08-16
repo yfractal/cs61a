@@ -46,7 +46,8 @@ print(max_of_tree(t))
 def sum_of_bin_tree(b_t):
     if b_t == None:
         return 0
-    return sum_3(b_datum( b_t) ,
+    return sum_3(
+          b_datum( b_t) ,
           sum_of_bin_tree(b_left_branch(b_t)) ,
           sum_of_bin_tree(b_right_branch(b_t)) 
        )
