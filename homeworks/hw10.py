@@ -90,18 +90,18 @@ class nil(object):
 nil = nil() # Assignment hides the nil class; there is only one instance
 
 
-def read_eval_print_loop():
-    """Run a read-eval-print loop for the Brackulator language."""
+def read_etoken_print_loop():
+    """Run a read-etoken-print loop for the Brackulator language."""
     global Pair, nil
     from scheme_reader import Pair, nil
-    from scalc import calc_eval
+    from scalc import calc_etoken
 
     while True:
         try:
             src = tokenize(input('> '))
             while len(src) > 0:
               expression = brack_read(src)
-              print(calc_eval(expression))
+              print(calc_etoken(expression))
         except (SyntaxError, ValueError, TypeError, ZeroDivisionError) as err:
             print(type(err).__name__ + ':', err)
         except (KeyboardInterrupt, EOFError):  # <Control>-D, etc.
@@ -135,22 +135,22 @@ def tokenize(line):
     >>> tokenize('2.3.4')
     Traceback (most recent call last):
         ...
-    ValueError: invalid token 2.3.4
+    ValueError: intokenid token 2.3.4
 
     >>> tokenize('?')
     Traceback (most recent call last):
         ...
-    ValueError: invalid token ?
+    ValueError: intokenid token ?
 
     >>> tokenize('hello')
     Traceback (most recent call last):
         ...
-    ValueError: invalid token hello
+    ValueError: intokenid token hello
 
     >>> tokenize('<(GO BEARS)>')
     Traceback (most recent call last):
         ...
-    ValueError: invalid token GO
+    ValueError: intokenid token GO
     """
     "*** YOUR CODE HERE ***"
     spaced = line
@@ -164,17 +164,10 @@ def tokenize(line):
         if t not in ALL_BRACKETS:
             to_num = coerce_to_number(t)
             if to_num == None:
-                raise ValueError('invalid token ' + t)
+                raise ValueError('intokenid token ' + t)
             else:
                 spaced[i] = to_num
         i += 1
-            # try:
-            #     spaced[i] = int(t)
-            # except(ValueError):
-            #     try:
-            #         spaced[i] = float(t)
-            #     except(ValueError):
-            #         raise ValueError('invalid token ' + t)
     return spaced
 
 
@@ -199,30 +192,30 @@ def is_post(token):
     return token in POST_TOKEN
 def is_pre(token):
     return token in PRE_TOKENS
-def isvalid(tokens):
-    """Return whether some prefix of tokens represent a valid Brackulator
+def istokenid(tokens):
+    """Return whether some prefix of tokens represent a tokenid Brackulator
     expression. Tokens in that expression are removed from tokens as a side
     effect.
 
-    >>> isvalid(tokenize('([])'))
+    >>> istokenid(tokenize('([])'))
     True
-    >>> isvalid(tokenize('([]')) # Missing right bracket
+    >>> istokenid(tokenize('([]')) # Missing right bracket
     False
-    >>> isvalid(tokenize('[)]')) # Extra right bracket
+    >>> istokenid(tokenize('[)]')) # Extra right bracket
     False
-    >>> isvalid(tokenize('([)]')) # Improper nesting
+    >>> istokenid(tokenize('([)]')) # Improper nesting
     False
-    >>> isvalid(tokenize('')) # No expression
+    >>> istokenid(tokenize('')) # No expression
     False
-    >>> isvalid(tokenize('100'))
+    >>> istokenid(tokenize('100'))
     True
-    >>> isvalid(tokenize('<(( [{}] [{}] ))>'))
+    >>> istokenid(tokenize('<(( [{}] [{}] ))>'))
     True
-    >>> isvalid(tokenize('<[2{12 6}](3 4 5)>'))
+    >>> istokenid(tokenize('<[2{12 6}](3 4 5)>'))
     True
-    >>> isvalid(tokenize('()()')) # More than one expression is ok
+    >>> istokenid(tokenize('()()')) # More than one expression is ok
     True
-    >>> isvalid(tokenize('[])')) # Junk after a valid expression is ok
+    >>> istokenid(tokenize('[])')) # Junk after a tokenid expression is ok
     True
     """
     "*** YOUR CODE HERE ***"
@@ -248,6 +241,7 @@ def isvalid(tokens):
     return match_stack == []
 
 # # Q3.
+DELIMITERS = ['(',')']
 
 def brack_read(tokens):
     """Return an expression tree for the first well-formed Brackulator
@@ -262,7 +256,7 @@ def brack_read(tokens):
     (* (+ 2 (/ 12 6)) (- 3 4 5))
     >>> brack_read(tokenize('(1)(1)')) # More than one expression is ok
     Pair('-', Pair(1, nil))
-    >>> brack_read(tokenize('[])')) # Junk after a valid expression is ok
+    >>> brack_read(tokenize('[])')) # Junk after a tokenid expression is ok
     Pair('+', nil)
 
     >>> brack_read(tokenize('([]')) # Missing right bracket
@@ -285,55 +279,78 @@ def brack_read(tokens):
         ...
     SyntaxError: unexpected end of line
     """
-    def analyze(tokens):
+    #1 to schem
+    def match_pre_post(pre,post):
+        return (pre,post) in PAIR
+
+    def to_scheme(tokens):
+        r_tokens = []
+        i = 0
+        pre_tokens_s = []
+        l = len(tokens)
+        while i < l:
+            token = tokens[i]
+            if is_pre(token):
+                pre_tokens_s += [token]
+                r_tokens += ["("] + [PRE_OP_DIC[token]] 
+            elif is_post(token):
+                if  i == l -1 :
+                    r_tokens += [")"]
+                elif (len(pre_tokens_s) == 0 \
+                    or not match_pre_post(pre_tokens_s[-1],token)):
+                    raise SyntaxError("unexpected {0}".format(token))
+                else:
+                    pre_tokens_s.pop()
+                    r_tokens += [")"]
+            else:
+                r_tokens += [token]    
+            i += 1
+        return r_tokens
+
+    #2 read
+    def read(tokens):
         if len(tokens) == 0:
+            raise SyntaxError("unexpected end of line")
+        token = tokens.pop(0)
+        if token == 'nil':
             return nil
-        token = tokens.pop(0)
-        if token in (int,float):
-            return token
-        if token in POST_TOKEN:
-            return analyze(tokens)
-        if is_pre(token):
-            return Pair(PRE_OP_DIC[token],analyze_operands(tokens,token))
-    def analyze_operands(tokens,pre_op):
-        args = []
-        token = tokens.pop(0)
-        while token != LEFT_RIGHT[pre_op]:
-            args.append(token)
-            token = tokens.pop(0)
-        return Pair(PRE_OP_DIC[args[0]],analyze(args[1:]))
+        elif token not in DELIMITERS:  # ( ) 
+            return token # number + 
+        elif token == "(":
+            return read_tail(tokens)
+        else:
+            raise SyntaxError("unexpected token: {0}".format(token))
 
-    return analyze(tokens)
+    def read_tail(tokens):
+        if len(tokens) == 0:
+            raise SyntaxError("unexpected end of line")
+        if tokens[0] == ")" :
+            tokens.pop(0) 
+            return nil
+        first = read(tokens)
+        rest = read_tail(tokens)
+        return Pair(first,rest)
+    return read(to_scheme(tokens))
 
-r1 = brack_read(tokenize('([])'))
-print("should be:\nPair('-', Pair(Pair('+', nil), nil))")
+# t1 = tokenize("()")
+# r1 = brack_read(t1)
+# print("r1 is ")
+# print(r1)
 
-
-# t4 = tokenize('(1 2)')
-# r4 = brack_read(t4)
-# print("r4 should be ")
-# print("(- 1 2)")
-# print(r4)
-
-# print("r1 is pending")
-# t1 = tokenize('100')
-# r1 = brack_read(t1) 
-
-# t2 = tokenize('()')
+# t2 = tokenize("(1 1)")
 # r2 = brack_read(t2)
+# print("r2 is ")
+# print(r2)
 
-# # # Pair('-', Pair(Pair('+', nil), nil))
-# t3 = tokenize('([])')        
+# t3 = tokenize("([])")
 # r3 = brack_read(t3)
-# print("r3 should be")
-# print("Pair('-', Pair(Pair('+', nil), nil))")
+# print("r3 is ")
+# print(r3)
 
-# t4 = tokenize('<[2{12 6}](3 4 5)>')
-# r4 = brack_read(t4)
-# print("r4 should be")
+# print(brack_read(tokenize('<[2{12 6}](3 4 5)>')))
+# print("should be:")
 # print("(* (+ 2 (/ 12 6)) (- 3 4 5))")
-# t5 = tokenize('(1 2)')
-# r5 = brack_read(t5)
+
 
 # # Q4.
 
