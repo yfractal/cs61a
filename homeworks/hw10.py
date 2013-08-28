@@ -125,7 +125,6 @@ POST_TOKEN = [')','}',']','>']
 
 # Q1.
 print(ALL_BRACKETS)
-
 def tokenize(line):
     """Convert a string into a list of tokens.
 
@@ -192,49 +191,55 @@ def is_post(token):
     return token in POST_TOKEN
 def is_pre(token):
     return token in PRE_TOKENS
-def istokenid(tokens):
+
+def isvalid(tokens):
     """Return whether some prefix of tokens represent a tokenid Brackulator
     expression. Tokens in that expression are removed from tokens as a side
     effect.
 
-    >>> istokenid(tokenize('([])'))
+    >>> isvalid(tokenize('([])'))
     True
-    >>> istokenid(tokenize('([]')) # Missing right bracket
+    >>> isvalid(tokenize('([]')) # Missing right bracket
     False
-    >>> istokenid(tokenize('[)]')) # Extra right bracket
+    >>> isvalid(tokenize('[)]')) # Extra right bracket
     False
-    >>> istokenid(tokenize('([)]')) # Improper nesting
+    >>> isvalid(tokenize('([)]')) # Improper nesting
     False
-    >>> istokenid(tokenize('')) # No expression
+    >>> isvalid(tokenize('')) # No expression
     False
-    >>> istokenid(tokenize('100'))
+    >>> isvalid(tokenize('100'))
     True
-    >>> istokenid(tokenize('<(( [{}] [{}] ))>'))
+    >>> isvalid(tokenize('<(( [{}] [{}] ))>'))
     True
-    >>> istokenid(tokenize('<[2{12 6}](3 4 5)>'))
+    >>> isvalid(tokenize('<[2{12 6}](3 4 5)>'))
     True
-    >>> istokenid(tokenize('()()')) # More than one expression is ok
+    >>> isvalid(tokenize('()()')) # More than one expression is ok
     True
-    >>> istokenid(tokenize('[])')) # Junk after a tokenid expression is ok
+    >>> isvalid(tokenize('[])')) # Junk after a tokenid expression is ok
     True
     """
     "*** YOUR CODE HERE ***"
 
     def is_match(pre,post):
         return (pre,post) in PAIR
+
     if len(tokens) == 0:
         return False
+
     match_stack = []
     for token in tokens:
-        if type(token) != int and type(token) != float:
+        # if type(token) != int and type(token) != float:
+        if type(token) not in (int,float):
             match_stack.append(token)
         if is_post(token):
+            # has a pre 
             if len(match_stack) >= 2:
                 post = match_stack.pop()
                 pre = match_stack.pop()
                 if not is_match(pre,post):
                     return False
 
+    # extral post token is ok
     while len(match_stack) != 0:
         if not is_post(match_stack.pop()):
             return False
@@ -330,34 +335,103 @@ def brack_read(tokens):
         first = read(tokens)
         rest = read_tail(tokens)
         return Pair(first,rest)
+
     return read(to_scheme(tokens))
 
-# t1 = tokenize("()")
-# r1 = brack_read(t1)
-# print("r1 is ")
-# print(r1)
+# rewrite
+def brack_read(tokens):
+    """Return an expression tree for the first well-formed Brackulator
+    expression in tokens. Tokens in that expression are removed from tokens as
+    a side effect.
 
-# t2 = tokenize("(1 1)")
-# r2 = brack_read(t2)
-# print("r2 is ")
-# print(r2)
+    >>> brack_read(tokenize('100'))
+    100
+    >>> brack_read(tokenize('([])'))
+    Pair('-', Pair(Pair('+', nil), nil))
+    >>> print(brack_read(tokenize('<[2{12 6}](3 4 5)>')))
+    (* (+ 2 (/ 12 6)) (- 3 4 5))
+    >>> brack_read(tokenize('(1)(1)')) # More than one expression is ok
+    Pair('-', Pair(1, nil))
+    >>> brack_read(tokenize('[])')) # Junk after a tokenid expression is ok
+    Pair('+', nil)
 
-# t3 = tokenize("([])")
-# r3 = brack_read(t3)
-# print("r3 is ")
-# print(r3)
+    >>> brack_read(tokenize('([]')) # Missing right bracket
+    Traceback (most recent call last):
+        ...
+    SyntaxError: unexpected end of line
 
-# print(brack_read(tokenize('<[2{12 6}](3 4 5)>')))
-# print("should be:")
-# print("(* (+ 2 (/ 12 6)) (- 3 4 5))")
+    >>> brack_read(tokenize('[)]')) # Extra right bracket
+    Traceback (most recent call last):
+        ...
+    SyntaxError: unexpected )
+
+    >>> brack_read(tokenize('([)]')) # Improper nesting
+    Traceback (most recent call last):
+        ...
+    SyntaxError: unexpected )
+
+    >>> brack_read(tokenize('')) # No expression
+    Traceback (most recent call last):
+        ...
+    SyntaxError: unexpected end of line
+    """
+    def check(tokens):
+        def is_match(pre,post):
+            return (pre,post) in PAIR
+
+        if len(tokens) == 0:
+            return False
+
+        match_stack = []
+        for token in tokens:
+            # if type(token) != int and type(token) != float:
+            if type(token) not in (int,float):
+                match_stack.append(token)
+            if is_post(token):
+                # has a pre 
+                if len(match_stack) >= 2:
+                    post = match_stack.pop()
+                    pre = match_stack.pop()
+                    if not is_match(pre,post):
+                        raise SyntaxError("unexpected " + post)
+                        
+    if not isvalid(tokens):
+        check(tokens)
+
+    def read(tokens):
+        if len(tokens) == 0:
+            raise SyntaxError("unexpected end of line")
+        token = tokens.pop(0)
+        if token == 'nil':
+            return nil
+        elif token not in PRE_TOKENS:
+            return token #it is a number
+            # return read_tail(token,tokens)
+        elif token in PRE_TOKENS:
+            op =  PRE_OP_DIC[token]
+            return read_tail(op,tokens)
+        else:
+            raise SyntaxError("unexpected token: {0}".format(token))
+
+    def read_tail(t,tokens):
+        if len(tokens) == 0:
+            raise SyntaxError("unexpected end of line")
+        if is_post(tokens[0]) :
+            tokens.pop(0) 
+            return Pair(t,nil)
+        first = t
+        read_first = read(tokens)
+        rest = read_tail(read_first,tokens)
+        return Pair(first,rest)
+    return read(tokens)
 
 
 # # Q4.
 
-# from urllib.request import urlopen
+from urllib.request import urlopen
 
-# def puzzle_4():
-#     """Return the soluton to puzzle 4."""
-#     "*** YOUR CODE HERE ***"
+def puzzle_4():
+    """Return the soluton to puzzle 4."""
+    "*** YOUR CODE HERE ***"
 
 
