@@ -19,17 +19,14 @@ def scheme_eval(expr, env):
     >>> scheme_eval(expr, create_global_frame())
     4
     """
+    # print(expr)
+    # print(type(expr))
     if expr is None:
         raise SchemeError("Cannot evaluate an undefined expression.")
 
-    # print("in scheme_eval,expr")
-    # print(expr)
-    # Evaluate Atoms
     if scheme_symbolp(expr):
-        # print("symbol")
         return env.lookup(expr)
     elif scheme_atomp(expr):
-        # print("is atom")
         return expr
 
     # All non-atomic expressions are lists.
@@ -55,18 +52,31 @@ def scheme_eval(expr, env):
     else:
         procedure = scheme_eval(first, env)
         args = rest.map(lambda operand: scheme_eval(operand, env))
-        return scheme_apply(procedure, args, env)
+        return scheme_apply(procedure.body, args, env)
 
 def scheme_apply(procedure, args, env):
     """Apply Scheme PROCEDURE to argument values ARGS in environment ENV."""
+    # print("scheme_apply is called")
     if isinstance(procedure, PrimitiveProcedure):
         return apply_primitive(procedure, args, env)
     elif isinstance(procedure, LambdaProcedure):
         "*** YOUR CODE HERE ***"
+        formals = procedure.formals
+        f = env.make_call_frame(formals,args)
+        print("procedure.body",procedure.body)
+        procedure.env = f
+        print("procedure.env",procedure.env)
+        return scheme_eval(procedure.body,procedure.env)
+        # Create a new Frame, with all formal parameters bound to their argument values.
+        # Evaluate the body of procedure in the environment represented by this new frame.
+        # Return the value of calling procedure.
+
     elif isinstance(procedure, MuProcedure):
         "*** YOUR CODE HERE ***"
     else:
         raise SchemeError("Cannot call {0}".format(str(procedure)))
+
+
 
 def apply_primitive(procedure, args, env):
     """Apply PrimitiveProcedure PROCEDURE to a Scheme list of ARGS in ENV.
@@ -121,7 +131,7 @@ class Frame(object):
         if symbol in self.bindings:
             return self.bindings[symbol]
         if self.parent != None:
-            self.parent.lookup(self,symbol)
+            self.parent.lookup(symbol)
         else:
             raise SchemeError("no such symbol in frame")
 
@@ -145,6 +155,10 @@ class Frame(object):
         """
         frame = Frame(self)
         "*** YOUR CODE HERE ***"
+        i = 0
+        while i < len(formals):
+            frame.bindings[formals[i]] = vals[i]
+            i += 1
         return frame
 
     def define(self, sym, val):
@@ -209,9 +223,6 @@ def do_lambda_form(vals, env):
     formals = vals[0]
     check_formals(formals)
     "*** YOUR CODE HERE ***"
-    # print("vals 1 is ",vals[1])
-    # print("vlas is",vals)
-    # print(len(vals))
     body = vals[1]
     if len(vals) == 3:
         body = Pair("begin",vals.second)
