@@ -26,8 +26,10 @@ def scheme_eval(expr, env):
     # print(expr)
     # Evaluate Atoms
     if scheme_symbolp(expr):
+        # print("symbol")
         return env.lookup(expr)
     elif scheme_atomp(expr):
+        # print("is atom")
         return expr
 
     # All non-atomic expressions are lists.
@@ -37,7 +39,7 @@ def scheme_eval(expr, env):
 
     # Evaluate Combinations
     if first in LOGIC_FORMS:
-        # in begin lambda form
+        # in begin, lambda form
         return scheme_eval(LOGIC_FORMS[first](rest, env), env)
     elif first == "lambda":
         return do_lambda_form(rest, env)
@@ -209,8 +211,11 @@ def do_lambda_form(vals, env):
     "*** YOUR CODE HERE ***"
     # print("vals 1 is ",vals[1])
     # print("vlas is",vals)
-    print(len(vals))
+    # print(len(vals))
     body = vals[1]
+    if len(vals) == 3:
+        body = Pair("begin",vals.second)
+
     return LambdaProcedure(formals,body,env)
 
 def do_mu_form(vals):
@@ -232,6 +237,12 @@ def do_define_form(vals, env):
         # or scheme_eval(vals[1],env)??
     elif isinstance(target, Pair):
         "*** YOUR CODE HERE ***"
+        params = vals.first.second
+        # print("target",target)
+        target = target[0]
+        l = Pair("lambda",Pair(params,vals.second))
+        # print(l)
+        env.bindings[target] = scheme_eval(l,env)
     else:
         raise SchemeError("bad argument to define")
 
@@ -298,13 +309,12 @@ def do_begin_form(vals, env):
     """Evaluate begin form with parameters VALS in environment ENV."""
     check_form(vals, 1)
     "*** YOUR CODE HERE ***"
-    # # pending...
-    # # get last
-    # while vals.second != nil:
-    #     vals = vals.second
-    # # the return eval
-    # return Pair("'",vals)
-    # print(vals)
+    # pending...!!!
+    # get last
+    while vals.second != nil:
+        vals = vals.second
+    # the return eval
+    return Pair("quote",vals)
 
 LOGIC_FORMS = {
         "and": do_and_form,
