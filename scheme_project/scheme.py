@@ -338,9 +338,7 @@ def do_cond_form(vals, env):
                 # no clause...
                 return True
             if len(clause) == 3:
-                # multiple expression
-                # do_begin is pending....
-                return scheme_eval(Pair("begin",clause.second.first),env)
+                return scheme_eval(Pair("begin",clause.second),env)
             r =  scheme_eval(clause.second.first,env)
             return r
 
@@ -348,13 +346,16 @@ def do_begin_form(vals, env):
     """Evaluate begin form with parameters VALS in environment ENV."""
     check_form(vals, 1)
     "*** YOUR CODE HERE ***"
+    # scm> (begin (display 3) (newline) (+ 2 3))
+    #     3
+    #     5
+    # above case without 3
     # pending...!!!
     # get last
     while vals.second != nil:
         vals = vals.second
     # the return eval
-    print("pending....")
-    return Pair("quote",vals)
+    return scheme_eval(Pair("quote",vals),env)
 
 LOGIC_FORMS = {
         "and": do_and_form,
