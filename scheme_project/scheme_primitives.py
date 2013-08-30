@@ -133,11 +133,16 @@ def scheme_append(*vals):
 
 @primitive("symbol?")
 def scheme_symbolp(x):
+    # print("str is here!!")
+    # print(x)
     return isinstance(x, str)
 
 @primitive("number?")
 def scheme_numberp(x):
+    # print("here")
+    # print(isinstance(x, int) or isinstance(x, float))
     return isinstance(x, int) or isinstance(x, float)
+
 
 @primitive("integer?")
 def scheme_integerp(x):

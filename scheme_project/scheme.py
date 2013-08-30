@@ -19,13 +19,15 @@ def scheme_eval(expr, env):
     >>> scheme_eval(expr, create_global_frame())
     4
     """
-    # print(expr)
-    # print(type(expr))
+    # print("expr is:",expr)
+
     if expr is None:
         raise SchemeError("Cannot evaluate an undefined expression.")
-
     if scheme_symbolp(expr):
-        return env.lookup(expr)
+        r = env.lookup(expr)
+        if r == None:
+            return expr
+        return r
     elif scheme_atomp(expr):
         return expr
 
@@ -33,10 +35,10 @@ def scheme_eval(expr, env):
     if not scheme_listp(expr):
         raise SchemeError("malformed list: {0}".format(str(expr)))
     first, rest = expr.first, expr.second
-
     # Evaluate Combinations
     if first in LOGIC_FORMS:
         # in begin, lambda form
+        # return scheme_eval(LOGIC_FORMS[first](rest, env), env)
         return scheme_eval(LOGIC_FORMS[first](rest, env), env)
     elif first == "lambda":
         return do_lambda_form(rest, env)
@@ -50,23 +52,28 @@ def scheme_eval(expr, env):
         expr, env = do_let_form(rest, env)
         return scheme_eval(expr, env)
     else:
+        # somethint is wrong here...
+
         procedure = scheme_eval(first, env)
         args = rest.map(lambda operand: scheme_eval(operand, env))
-        return scheme_apply(procedure.body, args, env)
+        # print("before call scheme_apply")
+        # print("procedure:",procedure)
+        return scheme_apply(procedure, args, env)
 
 def scheme_apply(procedure, args, env):
     """Apply Scheme PROCEDURE to argument values ARGS in environment ENV."""
-    # print("scheme_apply is called")
+    # suppose this is wright
+    # print("procedure is in scheme_apply")
+    # print(procedure)
     if isinstance(procedure, PrimitiveProcedure):
         return apply_primitive(procedure, args, env)
     elif isinstance(procedure, LambdaProcedure):
         "*** YOUR CODE HERE ***"
         formals = procedure.formals
         f = env.make_call_frame(formals,args)
-        print("procedure.body",procedure.body)
-        procedure.env = f
-        print("procedure.env",procedure.env)
-        return scheme_eval(procedure.body,procedure.env)
+        # print("procedure.body")
+        # print(procedure.body)
+        return scheme_eval(procedure.body,f)
         # Create a new Frame, with all formal parameters bound to their argument values.
         # Evaluate the body of procedure in the environment represented by this new frame.
         # Return the value of calling procedure.
@@ -128,12 +135,12 @@ class Frame(object):
     def lookup(self, symbol):
         """Return the value bound to SYMBOL.  Errors if SYMBOL is not found."""
         "*** YOUR CODE HERE ***"
+        if self == None:
+            raise SchemeError("no such symbol in frame")
         if symbol in self.bindings:
             return self.bindings[symbol]
         if self.parent != None:
-            self.parent.lookup(symbol)
-        else:
-            raise SchemeError("no such symbol in frame")
+            return self.parent.lookup(symbol)
 
 
     def global_frame(self):
@@ -218,15 +225,19 @@ class MuProcedure(object):
 #################
 
 def do_lambda_form(vals, env):
+    # env is parent frame
     """Evaluate a lambda form with parameters VALS in environment ENV."""
     check_form(vals, 2)
     formals = vals[0]
     check_formals(formals)
     "*** YOUR CODE HERE ***"
+    # print("env in do_lambda_form")
+    # print(env)
     body = vals[1]
+    # print("body in lambda")
+    # print(body)
     if len(vals) == 3:
         body = Pair("begin",vals.second)
-
     return LambdaProcedure(formals,body,env)
 
 def do_mu_form(vals):
@@ -262,7 +273,6 @@ def do_quote_form(vals):
     check_form(vals, 1, 1)
     "*** YOUR CODE HERE ***"
     return vals.first
-    # return vals(0)
 
 def do_let_form(vals, env):
     """Evaluate a let form with parameters VALS in environment ENV."""
@@ -291,6 +301,13 @@ def do_if_form(vals, env):
     """Evaluate if form with parameters VALS in environment ENV."""
     check_form(vals, 3, 3)
     "*** YOUR CODE HERE ***"
+    condition = vals[0]
+    if len(vals) < 3:
+        raise SchemeError("too few operands in form")
+    if scheme_eval(condition,env):
+        return scheme_eval(vals[1],env)
+    else:
+        return scheme_eval(vals[2],env)
 
 def do_and_form(vals, env):
     """Evaluate short-circuited and with parameters VALS in environment ENV."""
@@ -313,8 +330,19 @@ def do_cond_form(vals, env):
                 raise SchemeError("badly formed else clause")
         else:
             test = scheme_eval(clause.first, env)
+            # false if false ,else is true
         if scheme_true(test):
             "*** YOUR CODE HERE ***"
+            # else condition
+            if clause.second == nil:
+                # no clause...
+                return True
+            if len(clause) == 3:
+                # multiple expression
+                # do_begin is pending....
+                return scheme_eval(Pair("begin",clause.second.first),env)
+            r =  scheme_eval(clause.second.first,env)
+            return r
 
 def do_begin_form(vals, env):
     """Evaluate begin form with parameters VALS in environment ENV."""
@@ -325,6 +353,7 @@ def do_begin_form(vals, env):
     while vals.second != nil:
         vals = vals.second
     # the return eval
+    print("pending....")
     return Pair("quote",vals)
 
 LOGIC_FORMS = {
