@@ -1,5 +1,12 @@
 (
 	(
+		lambda (y) 
+			42 (* y 2)
+			)
+		 5
+		 )
+(
+	(
 	(lambda 
 					(f) 
 					(lambda (x) (f f x))

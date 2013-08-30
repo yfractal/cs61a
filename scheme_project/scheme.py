@@ -22,6 +22,8 @@ def scheme_eval(expr, env):
     if expr is None:
         raise SchemeError("Cannot evaluate an undefined expression.")
 
+    # print("in scheme_eval,expr")
+    # print(expr)
     # Evaluate Atoms
     if scheme_symbolp(expr):
         return env.lookup(expr)
@@ -35,6 +37,7 @@ def scheme_eval(expr, env):
 
     # Evaluate Combinations
     if first in LOGIC_FORMS:
+        # in begin lambda form
         return scheme_eval(LOGIC_FORMS[first](rest, env), env)
     elif first == "lambda":
         return do_lambda_form(rest, env)
@@ -62,16 +65,6 @@ def scheme_apply(procedure, args, env):
         "*** YOUR CODE HERE ***"
     else:
         raise SchemeError("Cannot call {0}".format(str(procedure)))
-
-# def create_global_frame():
-#     """Initialize and return a single-frame environment with built-in names."""
-#     env = Frame(None)
-#     env.define("eval", PrimitiveProcedure(scheme_eval, True))
-#     env.define("apply", PrimitiveProcedure(scheme_apply, True))
-#     env.define("load", PrimitiveProcedure(scheme_load, True))
-#     add_primitives(env)
-#     return env
-
 
 def apply_primitive(procedure, args, env):
     """Apply PrimitiveProcedure PROCEDURE to a Scheme list of ARGS in ENV.
@@ -214,6 +207,11 @@ def do_lambda_form(vals, env):
     formals = vals[0]
     check_formals(formals)
     "*** YOUR CODE HERE ***"
+    # print("vals 1 is ",vals[1])
+    # print("vlas is",vals)
+    print(len(vals))
+    body = vals[1]
+    return LambdaProcedure(formals,body,env)
 
 def do_mu_form(vals):
     """Evaluate a mu form with parameters VALS."""
@@ -300,6 +298,13 @@ def do_begin_form(vals, env):
     """Evaluate begin form with parameters VALS in environment ENV."""
     check_form(vals, 1)
     "*** YOUR CODE HERE ***"
+    # # pending...
+    # # get last
+    # while vals.second != nil:
+    #     vals = vals.second
+    # # the return eval
+    # return Pair("'",vals)
+    # print(vals)
 
 LOGIC_FORMS = {
         "and": do_and_form,
