@@ -19,8 +19,6 @@ def scheme_eval(expr, env):
     >>> scheme_eval(expr, create_global_frame())
     4
     """
-    # print("expr is:",expr)
-
     if expr is None:
         raise SchemeError("Cannot evaluate an undefined expression.")
     if scheme_symbolp(expr):
@@ -275,22 +273,40 @@ def do_quote_form(vals):
     return vals.first
 
 def do_let_form(vals, env):
+
     """Evaluate a let form with parameters VALS in environment ENV."""
     check_form(vals, 2)
     bindings = vals[0]
     exprs = vals.second
     if not scheme_listp(bindings):
         raise SchemeError("bad bindings list in let form")
-
     # Add a frame containing bindings
-    names, vals = nil, nil
+    # print("vals",vals.first)
+    t = vals.first
+    names = nil
+    v = nil
+    # while len(t) >= 1:
+    #     names = Pair(t.first.first,names)
+    #     v = Pair(t.first.second,v)
+    #     t = t.second
+    # names, vals = nil, nil
     "*** YOUR CODE HERE ***"
-    new_env = env.make_call_frame(names, vals)
+    new_env = env.make_call_frame(names, v)
+    while len(t) >= 1:
+        name = t.first.first
+        v = scheme_eval(t.first.second.first,env)
+        # ???why???
+        t = t.second
+        new_env.bindings[name] = v
 
+
+    # print("new_env")
+    # print(new_env)    
     # Evaluate all but the last expression after bindings, and return the last
     last = len(exprs)-1
     for i in range(0, last):
         scheme_eval(exprs[i], new_env)
+# !!!!!!!!!!!!!!!!!!
     return exprs[last], new_env
 
 #########################
