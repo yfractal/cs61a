@@ -1,0 +1,112 @@
+# python3 scheme_reader.py
+read> 42
+42
+read> '(1 2 3)
+(quote (1 2 3))
+read> nil
+()
+read> '()
+(quote ())
+read> (1 (2 3) (4 (5)))
+(1 (2 3) (4 (5)))
+read> (1 (9 8) . 7)
+(1 (9 8) . 7)
+read> (hi there . (cs . (student)))
+(hi there cs student)
+
+
+# python3 scheme.py
+scm> +
+<scheme_primitives.PrimitiveProcedure object at 0x2742d50>
+scm> (+ 1 2)
+3
+scm> (* 3 4 (- 5 2) 1)
+36
+scm> (odd? 31)
+True
+
+scm> (define x 15)
+scm> (define y (* 2 x))
+scm> y
+30
+scm> (+ y (* y 2) 1)
+91
+scm> (define x 20)
+scm> x
+20
+
+
+scm> 'hello
+hello
+scm> '(1 . 2)
+(1 . 2)
+scm> '(1 (2 three . (4 . 5)))
+(1 (2 three 4 . 5))
+scm> (car '(a b))
+a
+scm> (eval (cons 'car '('(1 2))))
+1
+
+
+scm> (begin (+ 2 3) (+ 5 6))
+    11
+    scm> (begin (display 3) (newline) (+ 2 3))
+    # can't display 3 ,may because the B part...
+    3
+    5
+
+scm> (lambda (x y) (+ x y))
+    (lambda (x y) (+ x y))
+
+STk> ((lambda (y) 42 (* y 2)) 5)
+    10    
+scm> (lambda (y) 42 (* y 2))
+    (lambda (y) (begin 42 (* y 2)))
+
+
+scm> (lambda (y) 42 (* y 2))
+(lambda (y) (begin 42 (* y 2)))
+scm> (define f (lambda (x) (* x 2)))
+scm> f
+(lambda (x) (* x 2))
+scm> (define (f x) (* x 2))
+scm> (f 1)
+2
+scm> (define (square x) (* x x))
+scm> (square 2)
+4
+
+
+
+scm> (if (= 4 2) true false)
+    False
+    scm> (if (= 4 4) (* 1 2) (+ 3 4))
+    2
+
+
+scm> (if (= 4 2) true)
+Error: too few operands in form
+
+
+
+scm> (cond ((= 4 3) 'nope)
+          ((= 4 4) 'hi)
+          (else 'wait))
+hi
+scm> (cond ((= 4 3) 'wat)
+          ((= 4 4))
+          (else 'hm))
+True
+scm> (cond ((= 4 4) 'here 42)
+          (else 'wat 0))
+42
+
+
+scm> (define x 'hi)
+  scm> (define y 'bye)
+  scm> (let ((x 42)
+            (y (* 5 10)))
+        (list x y))
+  (42 50)
+  scm> (list x y)
+  (hi bye)

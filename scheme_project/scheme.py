@@ -285,11 +285,6 @@ def do_let_form(vals, env):
     t = vals.first
     names = nil
     v = nil
-    # while len(t) >= 1:
-    #     names = Pair(t.first.first,names)
-    #     v = Pair(t.first.second,v)
-    #     t = t.second
-    # names, vals = nil, nil
     "*** YOUR CODE HERE ***"
     new_env = env.make_call_frame(names, v)
     while len(t) >= 1:
