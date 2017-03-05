@@ -120,7 +120,6 @@ def scheme_read(src):
     >>> print(read_line("(car '(1 2))"))
     (car (quote (1 2)))
     """
-    # print("src in read",src)
     if src.current() is None:
         raise EOFError
     val = src.pop()
@@ -130,8 +129,7 @@ def scheme_read(src):
         # it is an atom
         return val
     elif val == "'":
-        "*** YOUR CODE HERE ***"
-        return Pair('quote',Pair(scheme_read(src),nil))
+        return Pair('quote', Pair(scheme_read(src), nil))
     elif val == "(":
         return read_tail(src)
     else:
@@ -162,7 +160,6 @@ def read_tail(src):
     if src.current() == ")":
         src.pop()
         return nil
-    "*** YOUR CODE HERE ***"
     if src.current() == ".":
         src.pop()
         expression = scheme_read(src)
@@ -170,8 +167,7 @@ def read_tail(src):
             raise SyntaxError("Expected one element after .")
         src.pop()
         return expression
-    first = scheme_read(src)
-    rest = read_tail(src)
+    first, rest = scheme_read(src), read_tail(src)
     return Pair(first, rest)
 
 # Convenience methods
@@ -190,11 +186,6 @@ def read_line(line):
 
 # Interactive loop
 
-# line = "'hello"
-# tokens = tokenize_lines([line])
-# print(tokens)
-# r = scheme_read(Buffer(tokens))
-# print(r)
 @main
 def read_print_loop():
     """Run a read-print loop for Scheme expressions."""
