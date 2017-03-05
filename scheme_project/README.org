@@ -1,0 +1,28 @@
+* A Scheme Interpreter
+This interpreter is a [[https://inst.eecs.berkeley.edu/~cs61a/fa12/projects/scheme/scheme.html][project]] for CS61A. And it is an interpreter for a subset of the Scheme language.
+
+The project provided a basic struct and basic code(such as `Pair`, `Frame`) and student needs to implment some key functions, such as `scheme_eval`.
+
+* Feature supported
+1. variable and function defination
+2. `lambda`, `begin`, `let`, and `if` form
+3. tail recursive optimization for `if` condition
+
+* Usage
+NOTICE: it doesn't support `or` form and `and` form
+
+- Try the simple interpreter
+  `python3 scheme.py`
+
+- Test
+  `python3 scheme_test.py`
+
+- Tail recursive
+  uncomment the line scheme_eval = scheme_optimized_eval in scheme.py(line 435).
+  ```
+  (define (sum n total)
+    (if (zero? n) total
+      (sum (- n 1) (+ n total))))
+  (sum 1001 0)
+  ; expect 501501
+  ```
